@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY package.json ./
 COPY package.*.json ./
-COPY src/database/migrations ./dist/database/migrations/.
 COPY . .
 
 RUN npm install

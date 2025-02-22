@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "nodemon src/app.ts",
-    "build": "tsc"
+    "build": "tsc && cpx 'src/database/migrations/**/*.js' dist/database/migrations"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
@@ -22,6 +22,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.5",
     "@types/validator": "^13.12.2",
+    "cpx": "^1.5.0",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"

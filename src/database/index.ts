@@ -30,7 +30,6 @@ export class DatabaseService {
     }
 
     public async runMigrations() {
-        console.log(path.resolve(__dirname, 'migrations/*.js'));
         const umzug = new Umzug({
             migrations: { glob: path.resolve(__dirname, 'migrations/*.js') },
             context: this.db.getQueryInterface(),
