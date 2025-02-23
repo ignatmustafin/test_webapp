@@ -3,7 +3,7 @@ import {User} from "../database/models/user.model";
 import {IUserBalanceDecrementPayload, IUserBalanceIncrementPayload} from "../interfaces/user.interface";
 
 export class UserService {
-    private userRepository = DatabaseService.getInstance().getDb().getRepository(User)
+    private userRepository = DatabaseService.getInstance().getDb.getRepository(User)
 
     async decrementBalance(payload: IUserBalanceDecrementPayload) {
         const {userId, amount} = payload;

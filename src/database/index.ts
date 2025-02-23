@@ -25,7 +25,7 @@ export class DatabaseService {
         return DatabaseService.instance;
     }
 
-    public getDb() {
+    public get getDb() {
         return this.db;
     }
 
