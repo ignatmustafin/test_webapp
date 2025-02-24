@@ -1,4 +1,4 @@
-import {Table, Column, Model, DataType, Min} from "sequelize-typescript";
+import {Table, Column, Model, DataType} from "sequelize-typescript";
 
 @Table({
     tableName: "users",
@@ -8,7 +8,7 @@ export class User extends Model {
     @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
     id!: number;
 
-    @Min(0)
+    // min 0 added constraint in migration "20250221174200-create-users-add-row.js"
     @Column({ type: DataType.INTEGER, allowNull: false})
     balance!: number;
 }
