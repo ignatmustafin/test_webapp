@@ -1,27 +1,29 @@
-import {NextFunction, Request, Response} from "express";
+import { NextFunction, Request, Response } from "express";
+import { ApiError } from "../utils";
+import { DatabaseError } from "sequelize";
+import { ErrorDTO } from "../DTO";
 
 export const errorMiddleware = (
-    err: any,
-    req: Request,
-    res: Response,
-    next: NextFunction,
+  err: unknown,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
-    console.error(err);
-    if (err.errors) {
-        res.status(400).json({error: {validationErrors: err.errors}})
-        return;
-    } else if (err.message) {
+  console.error(err);
+  if (err instanceof ApiError) {
+    res.status(err.status).send(new ErrorDTO(err.message));
+  } else if (err instanceof DatabaseError) {
+    const dbError = err as DatabaseError & {
+      original?: { constraint?: string };
+    };
 
-        if (err.parent?.constraint === 'check_balance_non_negative') {
-            res.status(400).json({error: "user's balance could not be negative"})
-        } else {
-            res.status(400).json({error: err.message});
-        }
+    const message =
+      dbError.original?.constraint === "check_balance_non_negative"
+        ? "User's balance could not be negative"
+        : dbError.message;
 
-    } else {
-        res.status(500).json({error: "something went wrong"});
-    }
-
-    return;
-
+    res.status(400).send(new ErrorDTO(message));
+  } else {
+    res.status(500).send(new ErrorDTO("Unknown server error"));
+  }
 };

@@ -1,20 +1,30 @@
 import "reflect-metadata";
 import "dotenv/config";
-import express from 'express'
+import express from "express";
 import "express-async-errors";
-import {DatabaseService} from "./database";
-import {MainRouter} from "./routers";
-import {errorMiddleware} from "./middlewares/error.mddw";
+import { DatabaseService } from "./database";
+import { MainRouter } from "./routers";
+import { errorMiddleware } from "./middlewares";
 
-const app = express();
-app.use(express.json());
+const PORT = parseInt(process.env.PORT || "3000", 10);
 
-app.use('/api', MainRouter)
-app.use(errorMiddleware);
+const startServer = async () => {
+  try {
+    await DatabaseService.getInstance().runMigrations();
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, async () => {
-    const dbService = DatabaseService.getInstance();
-    await dbService.runMigrations();
-    console.log(`Server is running. PORT ${PORT}`)
-})
+    const app = express();
+
+    app.use(express.json());
+    app.use("/api", MainRouter);
+    app.use(errorMiddleware);
+
+    app.listen(PORT, async () => {
+      console.log(`Server is running. PORT ${PORT}`);
+    });
+  } catch (e) {
+    console.error("Error starting the server:", e);
+    process.exit(1);
+  }
+};
+
+startServer();

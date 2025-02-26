@@ -1,11 +1,12 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult} from "express-validator";
+import {ApiError} from "../utils";
 
-export const validate = (req: Request, res: Response, next: NextFunction) => {
+export const validationResultMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        next(errors)
+        next(ApiError.ValidationError(errors))
     }
     next();
 }

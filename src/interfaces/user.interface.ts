@@ -1,9 +1,7 @@
-export interface IUserBalanceDecrementPayload {
-    userId: number;
-    amount: number;
-}
+import {EUserBalanceUpdateOperation} from "../enums";
 
-export interface IUserBalanceIncrementPayload {
+export interface IUserBalanceUpdatePayload {
     userId: number;
     amount: number;
+    operation: EUserBalanceUpdateOperation
 }

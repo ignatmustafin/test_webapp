@@ -1,25 +1,31 @@
-import {DatabaseService} from "../database";
-import {User} from "../database/models/user.model";
-import {IUserBalanceDecrementPayload, IUserBalanceIncrementPayload} from "../interfaces/user.interface";
+import { User } from "../database/models/user.model";
+import { IUserBalanceUpdatePayload } from "../interfaces";
+import { EUserBalanceUpdateOperation } from "../enums";
+import { InjectionService } from "./injection.service";
 
-export class UserService {
-    private userRepository = DatabaseService.getInstance().getDb.getRepository(User)
+export class UserService extends InjectionService {
+  private userRepository = this.db.getRepository(User);
 
-    async decrementBalance(payload: IUserBalanceDecrementPayload) {
-        const {userId, amount} = payload;
-        const result = await this.userRepository.decrement('balance', {where: {id: userId}, by: amount});
-        if (!result?.[0]?.length) {
-            throw new Error('Balance was not affected')
-        }
-        return result[0][0];
+  async balanceUpdate(payload: IUserBalanceUpdatePayload) {
+    const { userId, amount, operation } = payload;
+
+    const result =
+      operation === EUserBalanceUpdateOperation.CREDIT
+        ? await this.userRepository.increment("balance", {
+            where: { id: userId },
+            by: amount,
+          })
+        : operation === EUserBalanceUpdateOperation.DEBIT
+          ? await this.userRepository.decrement("balance", {
+              where: { id: userId },
+              by: amount,
+            })
+          : null;
+
+    if (!result?.[0]?.length) {
+      throw new Error("Balance was not affected");
     }
 
-    async incrementBalance(payload: IUserBalanceIncrementPayload) {
-        const {userId, amount} = payload;
-        const result = await this.userRepository.increment('balance', {where: {id: userId}, by: amount});
-        if (!result?.[0]?.length) {
-            throw new Error('Balance was not affected')
-        }
-        return result[0][0];
-    }
+    return result[0][0];
+  }
 }
