@@ -3,6 +3,7 @@ import { dbModels } from "./models";
 import { SequelizeStorage, Umzug } from "umzug";
 import dbConfig from "./config";
 import path from "path";
+import { RedisService } from "../services/redis.service";
 
 // Singleton
 export class DatabaseService {
@@ -29,15 +30,22 @@ export class DatabaseService {
 
   public async runMigrations() {
     try {
+      const lock = await RedisService.getInstance().lock(
+        `lock:db:migrations`,
+        30000,
+      );
+
+      if (lock) {
         const umzug = new Umzug({
-            migrations: { glob: path.resolve(__dirname, "migrations/*.js") },
-            context: this.db.getQueryInterface(),
-            storage: new SequelizeStorage({ sequelize: this.db }),
-            logger: console,
+          migrations: { glob: path.resolve(__dirname, "migrations/*.js") },
+          context: this.db.getQueryInterface(),
+          storage: new SequelizeStorage({ sequelize: this.db }),
+          logger: console,
         });
 
         await umzug.up();
         console.log("Migrations are completed");
+      }
     } catch (e) {
       console.error("Migration failed:", e);
       process.exit(1);

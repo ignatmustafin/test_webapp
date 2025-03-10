@@ -7,7 +7,7 @@ export class ErrorDTO implements IError {
     constructor(message: string, errors?: Result<ValidationError>) {
         this.error = {
             message,
-            errors: errors ? errors.array() : undefined, // Приводим Result<ValidationError> к массиву
+            errors: errors ? errors.array() : undefined,
         };
     }
 }

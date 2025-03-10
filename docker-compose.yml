@@ -15,21 +15,51 @@ services:
       timeout: 3s
       retries: 5
   app:
-    container_name: test_webapp_app
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3000-3004:3000"
     env_file:
       - .env
     environment:
       DB_HOST: postgres
+      REDIS_HOST: redis
+      RABBITMQ_HOST: rabbitmq
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    deploy:
+      replicas: 5
     command: >
       sh -c "
         npm run build &&
         node dist/app.js
       "
+  redis:
+    container_name: test_webapp_redis
+    image: redis:latest
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: Dockerfile-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5

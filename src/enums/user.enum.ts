@@ -1,4 +1,4 @@
 export enum EUserBalanceUpdateOperation {
-    CREDIT = "credit",
-    DEBIT = "debit"
+  CREDIT = "credit",
+  DEBIT = "debit",
 }

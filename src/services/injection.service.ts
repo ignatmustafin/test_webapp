@@ -1,4 +1,6 @@
-import {DatabaseService} from "../database";
+import { DatabaseService } from "../database";
+import { RedisService } from "./redis.service";
+import {RabbitMqService} from "./rabbitmq.service";
 
 /**
  * Base service for injecting common dependencies.
@@ -16,5 +18,13 @@ import {DatabaseService} from "../database";
  * - Other services commonly required in business logic
  */
 export class InjectionService {
-    public db = DatabaseService.getInstance().getDb;
+    // db
+  public db = DatabaseService.getInstance().getDb;
+
+  // redis
+  public redisService = RedisService.getInstance();
+  public redisConnection = this.redisService.getRedisConnection;
+
+  // rabbitmq
+  public rabbitMqService = RabbitMqService.getInstance();
 }
